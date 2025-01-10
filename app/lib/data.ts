@@ -9,9 +9,9 @@ import {
 } from './definitions';
 import { formatCurrency } from './utils';
 
-const client = await db.connect();
 
 export async function fetchRevenue() {
+  const client = await db.connect();
   try {
     // Artificially delay a response for demo purposes.
     // Don't do this in production :)
@@ -27,10 +27,13 @@ export async function fetchRevenue() {
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch revenue data.');
+  } finally {
+    client.release();
   }
 }
 
 export async function fetchLatestInvoices() {
+  const client = await db.connect();
   try {
     const data = await client.sql<LatestInvoiceRaw>`
       SELECT invoices.amount, customers.name, customers.image_url, customers.email, invoices.id
@@ -47,10 +50,13 @@ export async function fetchLatestInvoices() {
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch the latest invoices.');
+  } finally {
+    client.release();
   }
 }
 
 export async function fetchCardData() {
+  const client = await db.connect();
   try {
     // You can probably combine these into a single SQL query
     // However, we are intentionally splitting them to demonstrate
@@ -82,6 +88,8 @@ export async function fetchCardData() {
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch card data.');
+  } finally {
+    client.release();
   }
 }
 
@@ -90,6 +98,7 @@ export async function fetchFilteredInvoices(
   query: string,
   currentPage: number,
 ) {
+  const client = await db.connect();
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
   try {
@@ -118,10 +127,13 @@ export async function fetchFilteredInvoices(
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch invoices.');
+  } finally {
+    client.release();
   }
 }
 
 export async function fetchInvoicesPages(query: string) {
+  const client = await db.connect();
   try {
     const count = await client.sql`SELECT COUNT(*)
     FROM invoices
@@ -139,10 +151,13 @@ export async function fetchInvoicesPages(query: string) {
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch total number of invoices.');
+  } finally {
+    client.release();
   }
 }
 
 export async function fetchInvoiceById(id: string) {
+  const client = await db.connect();
   try {
     const data = await client.sql<InvoiceForm>`
       SELECT
@@ -164,10 +179,13 @@ export async function fetchInvoiceById(id: string) {
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch invoice.');
+  } finally {
+    client.release();
   }
 }
 
 export async function fetchCustomers() {
+  const client = await db.connect();
   try {
     const data = await client.sql<CustomerField>`
       SELECT
@@ -182,10 +200,13 @@ export async function fetchCustomers() {
   } catch (err) {
     console.error('Database Error:', err);
     throw new Error('Failed to fetch all customers.');
+  } finally {
+    client.release();
   }
 }
 
 export async function fetchFilteredCustomers(query: string) {
+  const client = await db.connect();
   try {
     const data = await client.sql<CustomersTableType>`
 		SELECT
@@ -215,5 +236,7 @@ export async function fetchFilteredCustomers(query: string) {
   } catch (err) {
     console.error('Database Error:', err);
     throw new Error('Failed to fetch customer table.');
+  } finally {
+    client.release();
   }
 }
