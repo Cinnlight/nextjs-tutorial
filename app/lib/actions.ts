@@ -29,9 +29,10 @@ export async function createInvoice(formData: FormData) {
     INSERT INTO invoices (customer_id, amount, status, date)
     VALUES (${customerId}, ${amountInCents}, ${status}, ${date})
   `;
+    client.release();
 
     revalidatePath('/dashboard/invoices');
     redirect('/dashboard/invoices');
 
-    client.release();
+    
 }
